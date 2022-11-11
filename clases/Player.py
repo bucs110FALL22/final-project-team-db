@@ -54,17 +54,17 @@ class Player(pygame.sprite.Sprite):
       sees how many times the player has been knocked down. if less then three then the "back_up method" starts, if they returns True then the player returns to the fight
       '''
       knochdown_animation()
-      if tko_count = 3 
+      if tko_count == 3:
         #break game loop, start loss sequence
       else:
         back_up = self.back_up()
-       if back_up:
+        if back_up:
         self.tko_count += 1 
         self.knockdown = False 
         self.health = (100 -(self.tko_count * 25))
         back_up_animation
     def block_cooldown(self):
-      '''
+      '''.
       puts the block method on cooldown
       '''
       self.on_cooldown = True
@@ -94,12 +94,13 @@ class Player(pygame.sprite.Sprite):
       else:
         #stop game loop and start loss sequence
     
-    def punch(self):
+    def punch(self,Opponent):
       punch_blocked = random.randrange(1,self.punch_difficulty)
       if punch_blocked == 1:
+        Opponent.block_animation()
         break
       else:
-        #make the enemy take -10 health
+        Opponent.health  -= 10 
 
 
 
