@@ -2,7 +2,7 @@ import pygame
 import time
 import random
 class Player(pygame.sprite.Sprite):
-    def __init__(self,image_file,difficulty):
+    def __init__(self,difficulty):
       super().__init__(self)
       self.health = 100
       if self.health == 0:
@@ -59,10 +59,10 @@ class Player(pygame.sprite.Sprite):
       else:
         back_up = self.back_up()
         if back_up:
-        self.tko_count += 1 
-        self.knockdown = False 
-        self.health = (100 -(self.tko_count * 25))
-        back_up_animation
+          self.tko_count += 1 
+          self.knockdown = False 
+          self.health = (100 -(self.tko_count * 25))
+          back_up_animation()
     def block_cooldown(self):
       '''.
       puts the block method on cooldown
@@ -98,10 +98,11 @@ class Player(pygame.sprite.Sprite):
       punch_blocked = random.randrange(1,self.punch_difficulty)
       if punch_blocked == 1:
         Opponent.block_animation()
+        Opponent.blocked = True 
         break
       else:
         Opponent.health  -= 10 
-
+        
 
 
 

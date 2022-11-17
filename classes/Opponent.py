@@ -4,7 +4,7 @@ import random
 import Player
 
 class Opponent(pygame.sprite.Sprite):
-    def __init__(self,image_file,difficulty):
+    def __init__(self,difficulty):
       super().__init__(self)
       self.health = 100
       self.strength = 0
@@ -16,8 +16,11 @@ class Opponent(pygame.sprite.Sprite):
       self.cooldown = 0 
       self.position = (x,y)
       self.punch_difficulty = 0
+      self.blocked = False
+      self.agressiveness = 0
       self.difficulty()
-    def knockdown(self):
+      
+    def knockdown(self):#recovery isnt called
       if self.knockdown == True:
         tko_count += 1
         knockdown animation
@@ -30,42 +33,50 @@ class Opponent(pygame.sprite.Sprite):
       self.health = 150
       self.strength = 10
       self.recovery = 5
+      self.agressiveness = 8
     elif difficulty == "Easy":
       self.health = 100 
       self.strength = 7
       self.recovery = 3
+      self.agressiveness = 6
     elif difficulty == "Hard":
       self.health = 200
       self.strength = 15
       self.recovery = 1
+      self.agressiveness = 4
    'sets the starting stats to varying levels depending on difficulty'
   def recovery (difficulty):
-    if difficulty = "Regular" :
-       get_up = random.randrange(1,10)
-      if get_up > self.recovery_difficulty 
-        self.knockdown = False
-        get up animation
+    get_up = random.randrange(1,10)
+    if get_up > self.recovery_difficulty 
+      self.knockdown = False
+      get up animation
       else 
-        self.knockdown = True
-    'does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '
+        self.knockdown = True#knockdown is aready true if recovery where to be called
+    'does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '''
 
 
   
-  def punch(self,Player)
+  def punch(self,player)
   if Player.blocking:
     break
   else:
-    
     Player.health -= self.strength
-''
-  def when_to_punch(self):
-     chance_hit = random.randrange(1,10)
-    
-    if self.hit_by_opponent = True and chance_hit >= 5
-      punch animation
 
-    while self.time > 0
-      if self.block = False and chance_hit >=6
+    def punch_after_block(self):
+      punch_chance = random.randrange(1,10)
+      if punch_chance >= self.agressiveness:
+        punch_animation()
+        punch(Player)
+        
+    def when_to_punch(self):#I would be like, every 10 seconds roll do chance_hit, then if true, punch, then roll again, with a max of 3 punches. if blocked break the loop
+    
+      chance_hit = random.randrange(1,10)
+    
+      if self.hit_by_opponent = True and chance_hit >= 5
+        punch_animation()
+
+      while self.time > 0 
+        if self.block = False and chance_hit >=6
       punch animation
       time.sleep(self.cooldown)
 
