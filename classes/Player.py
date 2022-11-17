@@ -42,9 +42,9 @@ class Player(pygame.sprite.Sprite):
       makes the player unable to be hit by enemy, starts cooldown
       '''
       if self.on_cooldown:
-        break
+        pass
       else:
-        block_animation()
+        self.block_animation()
         self.blocking = True
         time.sleep(self.block_time)
         self.blocking = False
@@ -53,16 +53,16 @@ class Player(pygame.sprite.Sprite):
       '''
       sees how many times the player has been knocked down. if less then three then the "back_up method" starts, if they returns True then the player returns to the fight
       '''
-      knochdown_animation()
-      if tko_count == 3:
-        #break game loop, start loss sequence
+      self.knochdown_animation()
+      if self.tko_count == 3:
+        pass#break game loop, start loss sequence
       else:
         back_up = self.back_up()
         if back_up:
           self.tko_count += 1 
           self.knockdown = False 
           self.health = (100 -(self.tko_count * 25))
-          back_up_animation()
+          self.back_up_animation()
     def block_cooldown(self):
       '''.
       puts the block method on cooldown
@@ -84,22 +84,21 @@ class Player(pygame.sprite.Sprite):
       user must press space a certain amount of times before knockdown_timer becomes False. if they succeed they return to the game, if thy fail its a knockout and the player looses
       '''
       times_pressed = 0
-      knockdown_timer()
+      self.knockdown_timer()
       while self.mash_time:
-        if event.type == pygame.KEYDOWN:
-          if event.key == pygame.k_SPACE:
+        if pygame.event.type == pygame.KEYDOWN:
+          if pygame.event.key == pygame.k_SPACE:
             times_pressed += 1
       if times_pressed >=  self.required_presses:
         return(True)
       else:
-        #stop game loop and start loss sequence
+        pass#stop game loop and start loss sequence
     
     def punch(self,Opponent):
       punch_blocked = random.randrange(1,self.punch_difficulty)
       if punch_blocked == 1:
         Opponent.block_animation()
         Opponent.blocked = True 
-        break
       else:
         Opponent.health  -= 10 
         
@@ -120,7 +119,7 @@ class Player(pygame.sprite.Sprite):
       self.image = pygame.image.load()#keyframe 2
       time.sleep(.2)
       self.image = pygame.image.load()# keyframe 3
-    def block animation(self):
+    def block_animation(self):
       '''
       animation for when the player blocks
       '''

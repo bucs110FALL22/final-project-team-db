@@ -1,16 +1,16 @@
 import pygame
-import Animation 
+from pygame.locals import *
+from Animations import Animations 
 
-class Button(pygame.sprite.Sprite):
+class Button():
     def __init__(self,file_name,xpos,ypos,screen,b_type,):
-      # super().__init__(self)
       self.file_name = file_name
       self.x_pos = xpos
       self.y_pos = ypos
       self.clicked = False 
       self.diff = "none"
-      self.a = Animation()
-      self.button = pygame.image.load(self.file_name + ".png").convert_alpha()
+      self.a = Animations(screen)
+      self.button = pygame.image.load("assets/Button_imgs/" + self.file_name + ".png").convert_alpha()
       self.screen = screen
       self.rect = self.button.get_rect()
       self.rect.topleft = (xpos,ypos)
@@ -42,13 +42,15 @@ class Button(pygame.sprite.Sprite):
         if self.rect.collidepoint(pos):
           print(pos)
           self.is_being_hovered()
-
-          if event.type == pygame.MOUSEBUTTONDOWN:
-            self.click_recations()
-            
+          for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+              print("hov")
+              self.click_recations()
+    def check(self):
+      print("check")
     def is_being_hovered(self):
-        print("work")
-        self.button = pygame.image.load((self.file_name + "HOV" + ".png")).convert_alpha()
+        
+        self.button = pygame.image.load(("assets/Button_imgs/" + self.file_name + "HOV" + ".png")).convert_alpha()
         self.screen.blit(self.button,(self.x_pos,self.y_pos))
 
 
