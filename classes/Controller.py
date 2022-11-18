@@ -8,7 +8,7 @@ import time
 pygame.init()
 screen = pygame.display.set_mode((960,540))
 screen.fill((0,0,255))
-print("test")
+
 def intro_loop(screen):
   a = Animations(screen)
   a.intro()

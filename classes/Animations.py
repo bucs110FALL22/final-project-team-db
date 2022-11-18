@@ -7,7 +7,7 @@ class Animations():
     self.screen = screen
   def match_backround(self):
     pic = pygame.image.load('assets/diff_to_match/intro_to_diff_289.png').convert_alpha()
-    self.screen.blit(pic, (0, 0))
+    self.screen.blit(pic, (0, 0))#1
     # pygame.display.update()
   def intro(self):
     intro_pic = pygame.image.load('assets/intro/Punch_it_intro_1.png').convert_alpha()
