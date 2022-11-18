@@ -1,7 +1,7 @@
 import pygame 
 
 class Animations():
-  
+#TODO: remove
   def __init__(self,screen):
     self.screen = screen
   def intro(self):
