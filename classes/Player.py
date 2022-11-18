@@ -1,15 +1,13 @@
 import pygame
 import time
 import random
-class Player(pygame.sprite.Sprite):
+class Player():
     def __init__(self,difficulty):
-      super().__init__(self)
       self.health = 100
       if self.health == 0:
         self.knockdown()
       self.blocking = False
       self.cooldown = 0
-      self.position = (x,y)
       self.block_time = 0
       self.cooldown = 0
       self.punch_difficulty = 0
@@ -17,7 +15,6 @@ class Player(pygame.sprite.Sprite):
       self.knockdown = False
       self.on_cooldown = False
       self.required_pressess = (50 * (self.tko_count + 1))
-      self.image = pygame.image.load().alpha#first keyframe
       self.blocking_difficulty(difficulty)
     def blocking_difficulty(self,difficulty):
       '''

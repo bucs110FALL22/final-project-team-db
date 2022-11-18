@@ -1,11 +1,12 @@
 import pygame
 import time
 import random
-import Player
+from Player import Player
+from Animations import Animations
 
-class Opponent(pygame.sprite.Sprite):
+
+class Opponent():
     def __init__(self,difficulty):
-      super().__init__(self)
       self.health = 100
       self.strength = 0
       self.knockdown = False
@@ -22,7 +23,7 @@ class Opponent(pygame.sprite.Sprite):
       
     def knockdown(self):#recovery isnt called
       if self.knockdown == True:
-        tko_count += 1
+        selftko_count += 1
         self.a.opponent_fall(self)
       if self.tko_count == 3:
         pass #break game loop, player wins
