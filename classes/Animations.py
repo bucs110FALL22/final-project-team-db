@@ -1,6 +1,7 @@
 import pygame 
 import time
 
+
 class Animations():
   
   def __init__(self,screen):
@@ -50,11 +51,11 @@ class Animations():
       time.sleep(.1)
       pic_num += 1   
   def opponent_punch(self):
-    pic = pygame.image.load('assets/Opponent/punch_animation/Punch1.png').convert_alpha()
+    pic = pygame.image.load('assets/Opponent/punch_animation/punch1.png').convert_alpha()
     
     pic_num = 1
     for i in range(11):
-      pic = pygame.image.load(f'assets/Opponent/punch_animation/Punch{pic_num}.png').convert_alpha()
+      pic = pygame.image.load(f'assets/Opponent/punch_animation/punch{pic_num}.png').convert_alpha()
       self.match_backround()
       self.screen.blit(pic,(270,0))
       pygame.display.update()
@@ -93,8 +94,17 @@ class Animations():
       pygame.display.update()
       time.sleep(.1)
       pic_num += 1       
-  # def player_stand(self): 
-    
+  def player_stand(self): 
+    pic = pygame.image.load('assets/Player/p_stand/player_stand1.png').convert_alpha()
+        
+    pic_num = 1
+    for i in range(4):
+      pic = pygame.image.load(f'assets/Player/p_stand/player_stand{pic_num}.png').convert_alpha()
+      self.match_backround()
+      self.screen.blit(pic,(100,0))
+      pygame.display.update()
+      time.sleep(.1)
+      pic_num += 1    
   # def player_punch(self):
 
   # def player_block(self):
@@ -107,4 +117,16 @@ class Animations():
   # def loss(self):
   
 
-    
+  def stand(self):
+      pic = pygame.image.load('assets/Player/p_stand/player_stand1.png').convert_alpha()
+      pic2 = pygame.image.load('assets/Opponent/stand_animation/stand1.png').convert_alpha()    
+      pic_num = 1
+      for i in range(4):
+        pic = pygame.image.load(f'assets/Player/p_stand/player_stand{pic_num}.png').convert_alpha()
+        self.match_backround()
+        pic2 = pygame.image.load(f'assets/Opponent/stand_animation/stand{pic_num}.png').convert_alpha()
+        self.match_backround()
+        self.screen.blit(pic2,(270,0))
+        self.screen.blit(pic,(300,0))
+        pygame.display.update()
+        pic_num += 1   

@@ -5,8 +5,9 @@ from Player import Player
 from Animations import Animations
 
 
-class Opponent():
+class Opponent(pygame.sprite.Sprite):
     def __init__(self,difficulty):
+      super().__init__()
       self.health = 100
       self.strength = 0
       self.knockdown = False
@@ -20,6 +21,23 @@ class Opponent():
       self.blocked = False
       self.agressiveness = 0
       self.difficulty(difficulty)
+      self.stand_animation_render()
+      self.stand_animation()
+      self.current_sprite = 0
+      self.image = self.sprites[self.current_sprite]
+      self.rect = self.image.get_rect()
+      self.rect.topleft = (150,0)
+      self.punch = False
+      self.block = False
+    def update(self,speed):
+    # if self.punch or self.block or self.stand:
+      
+      self.current_sprite += speed
+      if int(self.current_sprite) >= len(self.sprites):
+        self.current_sprite = 0
+      self.image = self.sprites[int(self.current_sprite)]
+
+
       
     def knockdown(self):#recovery isnt called
       if self.knockdown == True:
@@ -82,4 +100,14 @@ class Opponent():
     #   # time.sleep(self.cooldown)
 
     #   '''different instance when the opponent would punch, 1. punched after being hit, 2. randomly punches throught the match'''
-    
+    def stand_animation_render(self):
+      '''
+      animation for when the player stands
+      '''
+      self.stand = []
+      for i in range(4):
+        self.stand.append(pygame.image.load(f'assets/Opponent/stand_animation/stand{i + 1}.png'))
+      
+  
+    def stand_animation(self):
+      self.sprites = self.stand
