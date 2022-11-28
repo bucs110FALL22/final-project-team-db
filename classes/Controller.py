@@ -1,8 +1,7 @@
 from Button import Button
 from Opponent import Opponent
 from Player import Player 
-
-# import Scorebord
+from Scorebord import Scorebord
 from Animations import Animations
 import pygame, sys
 import time
@@ -62,22 +61,32 @@ def match_loop(screen,difficulty):
   all_sprites = pygame.sprite.Group()
   opponent = Opponent(difficulty)
   player = Player(difficulty,opponent)
-  
+  sb = Scorebord(player,opponent,screen)
   all_sprites.add(player)
-  moving_sprites = pygame.sprite.Group()
-  moving_sprites.add(opponent,player)
+  sprites = pygame.sprite.Group()
+  sprites.add(opponent,player)
   backround = pygame.image.load('assets/diff_to_match/intro_to_diff_289.png').convert_alpha()
-  while True:
+  game_loop = True
+  while game_loop:
     screen.blit(backround,(0,0))
+    sb.health_bars()
+    opponent.health_check()
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         pygame.quit()
         sys.exit()
       if event.type == pygame.KEYDOWN:
-    	  player.punch()
-    moving_sprites.draw(screen)
-    moving_sprites.update(.5)
+        if event.key == pygame.K_UP:
+    	    player.punch()
+        if event.key == pygame.K_DOWN:
+          player.block()
+    sprites.draw(screen)
+    sprites.update(.25)
     pygame.display.flip()
     clock.tick(30)
-    
+    if player.game == "loss":
+      game_loop = False
+    if opponent.game == "loss":
+      game_loop = False
+# diff = intro_loop(screen)
 match_loop(screen, "easy")

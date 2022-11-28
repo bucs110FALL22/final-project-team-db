@@ -8,20 +8,17 @@ from Animations import Animations
 class Opponent(pygame.sprite.Sprite):
     def __init__(self,difficulty):
       super().__init__()
-      self.health = 100
+      self.health = 10
       self.strength = 0
-      self.knockdown = False
       self.tko_count = 0
       self.recovery_difficulty = 0
-      if self.health == 0:
-        self.knockdown()
       self.cooldown = 0 
       self.position = "(x,y)"
       self.punch_difficulty = 0
       self.blocked = False
       self.agressiveness = 0
       self.difficulty(difficulty)
-      self.stand_animation_render()
+      self.animation_render()
       self.stand_animation()
       self.current_sprite = 0
       self.image = self.sprites[self.current_sprite]
@@ -29,24 +26,31 @@ class Opponent(pygame.sprite.Sprite):
       self.rect.topleft = (150,0)
       self.punch = False
       self.block = False
+      self.not_stand = True
+      self.game = ""
     def update(self,speed):
-    # if self.punch or self.block or self.stand:
-      
       self.current_sprite += speed
       if int(self.current_sprite) >= len(self.sprites):
         self.current_sprite = 0
+        if self.not_stand: 
+          self.stand_animation()
+          self.not_stand = False
       self.image = self.sprites[int(self.current_sprite)]
 
 
+
+    def knockdown(self):
       
-    def knockdown(self):#recovery isnt called
-      if self.knockdown == True:
-        selftko_count += 1
-        self.a.opponent_fall(self)
+      self.down_animation()
+      self.tko_count += 1
       if self.tko_count == 3:
-        pass #break game loop, player wins
-        '''cuts to a screen of the player winning'''
-  
+        self.game = "loss"
+      self.recovery()
+      '''cuts to a screen of the player winning'''
+    def health_check(self):
+      if self.health == 0:
+        self.health = -1
+        self.knockdown()
     def difficulty(self, difficulty):
       if difficulty == "Regular":
         self.health = 150
@@ -67,10 +71,11 @@ class Opponent(pygame.sprite.Sprite):
     def recovery (self):
       get_up = random.randrange(1,10)
       if get_up > self.recovery_difficulty:
-        self.knockdown = False
-        self.a.opponent_getup()
-      else: 
-          self.knockdown = True#knockdown is aready true if recovery where to be called
+        pygame.time.wait(5000)
+        self.up_animation()
+      else:
+        self.game = "loss"
+        print("loss")
       '''does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '''
   
   
@@ -100,14 +105,43 @@ class Opponent(pygame.sprite.Sprite):
     #   # time.sleep(self.cooldown)
 
     #   '''different instance when the opponent would punch, 1. punched after being hit, 2. randomly punches throught the match'''
-    def stand_animation_render(self):
+    def animation_render(self):
       '''
       animation for when the player stands
       '''
       self.stand = []
       for i in range(4):
         self.stand.append(pygame.image.load(f'assets/Opponent/stand_animation/stand{i + 1}.png'))
+
+      self.punch_list = []
       
+      for i in range(11):
+        self.punch_list.append(pygame.image.load(f'assets/Opponent/punch_animation/punch{i + 1}.png'))
   
+      self.block_list = []
+      for i in range(5):
+        self.block_list.append(pygame.image.load(f'assets/Opponent/block_animation/block{i + 1}.png'))
+        
+      self.down_list = []
+      for i in range(4):
+        self.down_list.append(pygame.image.load(f'assets/Opponent/knockdown_animation/knockdown{i + 1}.png'))
+  
+      self.up_list = []
+      for i in range(5):
+        self.up_list.append(pygame.image.load(f'assets/Opponent/backup_animation/recovery{i + 1}.png'))      
+      
     def stand_animation(self):
       self.sprites = self.stand
+    def punch_animation(self):
+      self.sprites = self.punch_list
+      self.not_stand = True
+  
+    def block_animation(self):
+      self.sprites = self.block_list
+      self.not_stand = True
+    def down_animation(self):
+      self.sprites = self.down_list
+    def up_animation(self):
+      self.sprites = self.up_list
+      self.not_stand = True
+     
