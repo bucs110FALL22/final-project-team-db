@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 import Opponent
+import Scorebord
 class Player(pygame.sprite.Sprite):
   def __init__(self,difficulty,Opponent):
     super().__init__()
@@ -18,18 +19,16 @@ class Player(pygame.sprite.Sprite):
     self.rect.topleft = (150,0)
     self.stand = True
     self.blocking = False
-    self.cooldown = 0
     self.block_time = 0
-    self.cooldown = 0
-    self.punch_difficulty = 0
+    self.punch_difficulty = 2
     self.tko_count = 0
     self.knockdown = False
     self.on_cooldown = False
     self.required_pressess = (50 * (self.tko_count + 1))
     self.blocking_difficulty(difficulty)
     self.opponent = Opponent
+    self.punch_count = 0
     self.game = ""
-    
   def update(self,speed):
     
     self.current_sprite += speed
@@ -46,17 +45,16 @@ class Player(pygame.sprite.Sprite):
     sets how long you can block for and how long u have to wait to be able to block again and ur chances of punches being blocked
     args: difficulty(str) the difficulty of the game
     '''
-    if difficulty == "Easy":
-      self.block_time = 3
-      self.cooldown = 1
+    if difficulty == "easy":
+      self.block_time = 1
+      # self.cooldown = 1
       self.punch_difficulty = 7
-    elif difficulty == "Regular":
-      self.block_time = 2
-      self.cooldown = 2
+    elif difficulty == "regular":
+      self.block_time = .5
+      # self.cooldown = 2
       self.punch_difficulty = 5
-    elif difficulty == "Hard":
-      self.block_time = 1.5
-      self.cooldown = 3
+    elif difficulty == "hard":
+      self.block_time = .3
       self.punch_difficulty = 3
        #run at init
   def block(self):
@@ -68,11 +66,12 @@ class Player(pygame.sprite.Sprite):
       #play beep sound to signify on cooldown
     else:
       self.block_animation()
+      
       self.blocking = True
-      time.sleep(self.block_time)
+
       self.not_stand = True
       self.blocking = False
-      self.block_cooldown() 
+      # self.block_cooldown() 
   def knockdown(self):
     '''
     sees how many times the player has been knocked down. if less then three then the "back_up method" starts, if they return.s True then the player returns to the fight
@@ -119,14 +118,27 @@ class Player(pygame.sprite.Sprite):
     if times_pressed >=  self.required_presses:
       return(True)
       
-  def punch(self):
-    self.punch_animation()
-    punch_blocked = random.randrange(1,9)
-    if punch_blocked == 1:
-      self.opponent.block_animation()
-    else:
-      self.opponent.health  -= 10
-      
+  def punch(self,opponent):
+  
+      print(opponent.vulnerable)
+      print(self.punch_difficulty)
+      if self.punch_count == 3:
+        opponent.vulnerable = False
+        self.punch_count == 0 
+      self.punch_animation()
+      punch_blocked = random.randrange(1,(self.punch_difficulty))
+      if self.opponent.vulnerable == False:
+        opponent.block_animation()
+        self.punch_count = 0
+      elif punch_blocked <= (1 + self.punch_count):
+        opponent.block_animation()
+        self.punch_count = 0
+      else:
+        opponent.hit()
+        opponent.health -= 10
+        self.punch_count += 1
+        print(self.punch_count)
+        
 
 
 
@@ -140,23 +152,23 @@ class Player(pygame.sprite.Sprite):
     '''
     self.stand_list = []
     for i in range(4):
-      self.stand_list.append(pygame.image.load(f'assets/Player/p_stand/player_stand{i + 1}.png'))
+      self.stand_list.append(pygame.image.load(f'assets/Player/p_stand/player_stand{i + 1}.png').convert_alpha())
       
     self.punch_list = []
     
-    for i in range(6):
-      self.punch_list.append(pygame.image.load(f'assets/Player/p_punch/player_punch{i + 1}.png'))
+    for i in range(5):
+      self.punch_list.append(pygame.image.load(f'assets/Player/p_punch/player_punch{i + 1}.png').convert_alpha())
 
     self.block_list = []
     for i in range(4):
-      self.block_list.append(pygame.image.load(f'assets/Player/p_block/player_block{i + 1}.png'))
+      self.block_list.append(pygame.image.load(f'assets/Player/p_block/player_block{i + 1}.png').convert_alpha())
       
     self.down_list = []
-    self.down_list.append(pygame.image.load(f'assets/Player/p_down/player_down5.png'))
+    self.down_list.append(pygame.image.load(f'assets/Player/p_down/player_down5.png').convert_alpha())
 
     self.up_list = []
     for i in range(5):
-      self.up_list.append(pygame.image.load(f'assets/Player/p_down/player_down{5 - i}.png'))
+      self.up_list.append(pygame.image.load(f'assets/Player/p_down/player_down{5 - i}.png').convert_alpha())
   def stand_animation(self):
     self.sprites = self.stand_list
     

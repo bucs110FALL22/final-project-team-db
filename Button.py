@@ -2,8 +2,9 @@ import pygame
 from pygame.locals import *
 from Animations import Animations 
 import time
-class Button():
+class Button(pygame.sprite.Sprite):
     def __init__(self,file_name,xpos,ypos,screen,b_type,):
+        super().__init__()
         self.file_name = file_name
         self.x_pos = xpos
         self.y_pos = ypos

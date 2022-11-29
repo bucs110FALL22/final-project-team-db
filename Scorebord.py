@@ -1,15 +1,17 @@
 import pygame
-from Player import Player
-from Opponent import Opponent
+import Player
+import Opponent
 import time
 
 
 class Scorebord():   
   def __init__(self,player,opponent,screen):
     self.screen = screen
-    self.current_round = 1
     self.player = player
     self.opponent = opponent
+    self.current_round = 1
+    self.p_health = 100
+    self.o_health = 100
   def health_bars(self):
     '''
     creates the health bars of the player and opponent and get smaller when health decreases

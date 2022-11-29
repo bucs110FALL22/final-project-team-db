@@ -1,18 +1,18 @@
 import pygame
 import time
 import random
-from Player import Player
-from Animations import Animations
+import Scorebord
 
 
 class Opponent(pygame.sprite.Sprite):
-    def __init__(self,difficulty):
+    def __init__(self,difficulty,):
       super().__init__()
-      self.health = 10
+      self.health = 100
       self.strength = 0
       self.tko_count = 0
       self.recovery_difficulty = 0
       self.cooldown = 0 
+      self.on_cooldown_block = False
       self.position = "(x,y)"
       self.punch_difficulty = 0
       self.blocked = False
@@ -24,10 +24,9 @@ class Opponent(pygame.sprite.Sprite):
       self.image = self.sprites[self.current_sprite]
       self.rect = self.image.get_rect()
       self.rect.topleft = (150,0)
-      self.punch = False
-      self.block = False
       self.not_stand = True
       self.game = ""
+      self.vulnerable = False
     def update(self,speed):
       self.current_sprite += speed
       if int(self.current_sprite) >= len(self.sprites):
@@ -52,21 +51,24 @@ class Opponent(pygame.sprite.Sprite):
         self.health = -1
         self.knockdown()
     def difficulty(self, difficulty):
-      if difficulty == "Regular":
+      if difficulty == "regular":
         self.health = 150
         self.strength = 10
-        self.recovery = 5
+        self.recovery_difficulty = 5
         self.agressiveness = 8
-      elif difficulty == "Easy":
+        self.cooldown = 4
+      elif difficulty == "easy":
         self.health = 100 
-        self.strength = 7
-        self.recovery = 3
+        self.strength = 5
+        self.recovery_difficulty = 7
         self.agressiveness = 6
-      elif difficulty == "Hard":
+        # self.cooldown = 5
+      elif difficulty == "hard":
         self.health = 200
         self.strength = 15
-        self.recovery = 1
+        self.recovery_difficulty = 3
         self.agressiveness = 4
+        self.cooldown = 3
         '''sets the starting stats to varying levels depending on difficulty'''
     def recovery (self):
       get_up = random.randrange(1,10)
@@ -78,8 +80,31 @@ class Opponent(pygame.sprite.Sprite):
         print("loss")
       '''does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '''
   
-  
-    
+    # def vulnerable(self):
+    #   self.vulnerable = True
+    #   pygame.time.set_timer(pygame.USEREVENT, 100)
+    #   for event in pygame.event.get():
+    #     if event.type == pygame.USEREVENT:
+    #       self.vulnerable = False
+          
+    def punch(self,player):
+      if self.health > 0:
+        punch_random = random.randrange(1,100)
+        if punch_random > 98 :
+          
+          self.punch_animation()
+          print("punching")
+          print(self.current_sprite)
+          
+          if player.blocking and self.current_sprite > 7 :
+           self.vulnerable = True
+           print("blocked")
+          elif player.blocking == False and self.current_sprite > 7:
+            print("hit")
+            player.health -= self.strength
+            self.vulnerable = True
+            print(player.health)
+       
     # def punch(self,player):
     #   if Player.blocking:
     #     break
@@ -111,24 +136,28 @@ class Opponent(pygame.sprite.Sprite):
       '''
       self.stand = []
       for i in range(4):
-        self.stand.append(pygame.image.load(f'assets/Opponent/stand_animation/stand{i + 1}.png'))
+        self.stand.append(pygame.image.load(f'assets/Opponent/stand_animation/stand{i + 1}.png').convert_alpha())
 
       self.punch_list = []
       
       for i in range(11):
-        self.punch_list.append(pygame.image.load(f'assets/Opponent/punch_animation/punch{i + 1}.png'))
+        self.punch_list.append(pygame.image.load(f'assets/Opponent/punch_animation/punch{i + 1}.png').convert_alpha())
   
       self.block_list = []
       for i in range(5):
-        self.block_list.append(pygame.image.load(f'assets/Opponent/block_animation/block{i + 1}.png'))
+        self.block_list.append(pygame.image.load(f'assets/Opponent/block_animation/block{i + 1}.png').convert_alpha())
         
       self.down_list = []
       for i in range(4):
-        self.down_list.append(pygame.image.load(f'assets/Opponent/knockdown_animation/knockdown{i + 1}.png'))
+        self.down_list.append(pygame.image.load(f'assets/Opponent/knockdown_animation/knockdown{i + 1}.png').convert_alpha())
   
       self.up_list = []
       for i in range(5):
-        self.up_list.append(pygame.image.load(f'assets/Opponent/backup_animation/recovery{i + 1}.png'))      
+        self.up_list.append(pygame.image.load(f'assets/Opponent/backup_animation/recovery{i + 1}.png').convert_alpha())      
+
+      self.hit_img = []
+      for i in range(3):
+        self.hit_img.append(pygame.image.load('assets/Opponent/punch_animation/punch5.png').convert_alpha())
       
     def stand_animation(self):
       self.sprites = self.stand
@@ -144,4 +173,8 @@ class Opponent(pygame.sprite.Sprite):
     def up_animation(self):
       self.sprites = self.up_list
       self.not_stand = True
-     
+    def hit(self):
+      self.sprites = self.hit_img
+      self.not_stand = True
+       
+       
