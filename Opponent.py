@@ -2,12 +2,12 @@ import pygame
 import time
 import random
 import Scorebord
-
+from threading import Timer
 
 class Opponent(pygame.sprite.Sprite):
     def __init__(self,difficulty,):
       super().__init__()
-      self.health = 100
+      self.health = 10
       self.strength = 0
       self.tko_count = 0
       self.recovery_difficulty = 0
@@ -27,6 +27,7 @@ class Opponent(pygame.sprite.Sprite):
       self.not_stand = True
       self.game = ""
       self.vulnerable = False
+      self.player = ""
     def update(self,speed):
       self.current_sprite += speed
       if int(self.current_sprite) >= len(self.sprites):
@@ -73,11 +74,17 @@ class Opponent(pygame.sprite.Sprite):
     def recovery (self):
       get_up = random.randrange(1,10)
       if get_up > self.recovery_difficulty:
-        pygame.time.wait(5000)
-        self.up_animation()
+        u_timer = Timer(get_up,self.backup())  # Timer(seconds, function)
+        u_timer.start()
       else:
+        
         self.game = "loss"
         print("loss")
+    def backup(self):
+      self.up_animation()
+      self.tko_count += 1 
+      self.health = (100 -(self.tko_count * 25))
+      
       '''does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '''
   
     # def vulnerable(self):
@@ -88,23 +95,28 @@ class Opponent(pygame.sprite.Sprite):
     #       self.vulnerable = False
           
     def punch(self,player):
+      self.player = player
       if self.health > 0:
         punch_random = random.randrange(1,100)
-        if punch_random > 98 :
+        if punch_random > 95 and self.vulnerable == False :
           
           self.punch_animation()
           print("punching")
-          print(self.current_sprite)
-          
-          if player.blocking and self.current_sprite > 7 :
-           self.vulnerable = True
-           print("blocked")
-          elif player.blocking == False and self.current_sprite > 7:
-            print("hit")
-            player.health -= self.strength
-            self.vulnerable = True
-            print(player.health)
-       
+          p_timer = Timer(.7, self.punch_decider)
+          p_timer.start()
+    def punch_decider(self):    
+        if self.player.blocking:
+          self.vulnerable = True
+          print("blocked")
+          print(self.vulnerable)
+        elif self.player.blocking == False:
+          print("hit")
+          self.player.health -= self.strength
+          v_timer = Timer(5,self.unvulnerable)
+          v_timer.start()
+          print(self.player.health)
+    def unvulnerable(self):
+      self.vulnerable = False
     # def punch(self,player):
     #   if Player.blocking:
     #     break

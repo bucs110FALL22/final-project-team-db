@@ -30,8 +30,21 @@ class Scorebord():
     #Opponent health print "opponent" above
     pygame.draw.rect(self.screen,"red",(500,20,(self.opponent.health * 4),20))
   
+  def winner(self):
+    pygame.display.set_caption("show text")
+    font = pygame.font.Font('assets/fonts/Komyca3DFreeVersionItalic-rg1WO.ttf', 50)
+    text = font.render('YOU WIN!', True, "red")
+    textRect = text.get_rect()
+    textRect.topleft = (370,200)
+    self.screen.blit(text,textRect)
 
-
+  def loss(self):
+    pygame.display.set_caption("show text")
+    font = pygame.font.Font('assets/fonts/Komyca3DFreeVersionItalic-rg1WO.ttf', 50)
+    text = font.render('--YOU LOOSE--', True, "red")
+    textRect = text.get_rect()
+    textRect.topleft = (370,200)
+    self.screen.blit(text,textRect)
   # def clock(self):
   #   '''
   #   counts down time for the round

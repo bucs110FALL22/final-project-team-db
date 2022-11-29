@@ -3,12 +3,12 @@ import time
 import random
 import Opponent
 import Scorebord
+from threading import Timer
 class Player(pygame.sprite.Sprite):
   def __init__(self,difficulty,Opponent):
     super().__init__()
-    self.health = 100
-    if self.health == 0:
-      self.knockdown()
+    self.health = 0
+
     self.sprites = []
     self.animation_render()
     self.stand_animation()
@@ -22,13 +22,16 @@ class Player(pygame.sprite.Sprite):
     self.block_time = 0
     self.punch_difficulty = 2
     self.tko_count = 0
-    self.knockdown = False
+  
     self.on_cooldown = False
-    self.required_pressess = (50 * (self.tko_count + 1))
+    self.required_presses = (25 * (self.tko_count + 1))
     self.blocking_difficulty(difficulty)
     self.opponent = Opponent
     self.punch_count = 0
     self.game = ""
+  def health_check(self):
+    if self.health <= 0:
+      self.knockdown()
   def update(self,speed):
     
     self.current_sprite += speed
@@ -46,37 +49,34 @@ class Player(pygame.sprite.Sprite):
     args: difficulty(str) the difficulty of the game
     '''
     if difficulty == "easy":
-      self.block_time = 1
+      self.block_grace = .25
       # self.cooldown = 1
       self.punch_difficulty = 7
     elif difficulty == "regular":
-      self.block_time = .5
+      self.block_grace= .2
       # self.cooldown = 2
       self.punch_difficulty = 5
     elif difficulty == "hard":
-      self.block_time = .3
+      self.block_grace = .15
       self.punch_difficulty = 3
        #run at init
   def block(self):
     '''
     makes the player unable to be hit by enemy, starts cooldown
     '''
-    if self.on_cooldown:
-      pass
-      #play beep sound to signify on cooldown
-    else:
-      self.block_animation()
-      
-      self.blocking = True
-
-      self.not_stand = True
-      self.blocking = False
+    self.block_animation()
+    self.blocking = True
+    p_timer = Timer(self.block_grace, self.unblock)
+    p_timer.start()
+  def unblock(self):
+    self.not_stand = True
+    self.blocking = False
       # self.block_cooldown() 
   def knockdown(self):
     '''
     sees how many times the player has been knocked down. if less then three then the "back_up method" starts, if they return.s True then the player returns to the fight
     '''
-    self.knochdown_animation()
+    self.down_animation()
     if self.tko_count == 3:
       self.game = "loss"
     else:
@@ -86,21 +86,6 @@ class Player(pygame.sprite.Sprite):
         self.knockdown = False 
         self.health = (100 -(self.tko_count * 25))
         self.up_animation()
-  def block_cooldown(self):
-    '''.
-    puts the block method on cooldown
-    '''
-    self.on_cooldown = True
-    pygame.time.set_timer(pygame.USEREVENT,(1000 * self.cooldown ))
-    timer = True
-    for event in pygame.event.get():
-      if event.type == pygame.USEREVENT:
-        timer = False
-    if timer == False:
-      self.on_cooldown = False
-
-
-
   def back_up(self):
     '''
     user must press space a certain amount of times before knockdown_timer becomes False. if they succeed they return to the game, if thy fail its a knockout and the player looses
@@ -108,34 +93,34 @@ class Player(pygame.sprite.Sprite):
     times_pressed = 0
     pygame.time.set_timer(pygame.USEREVENT, 10000)
     timer = True
+    print("mash")
     while timer:
       for event in pygame.event.get():
         if event.type == pygame.USEREVENT:
           timer = False
-        if pygame.event.type == pygame.KEYDOWN:
-          if pygame.event.key == pygame.k_SPACE:
+        if event.type == pygame.KEYDOWN:
+          if event.key == pygame.K_SPACE:
             times_pressed += 1
+            print(times_pressed)
     if times_pressed >=  self.required_presses:
       return(True)
+    else:
+      self.game = "loss"
       
   def punch(self,opponent):
-  
-      print(opponent.vulnerable)
-      print(self.punch_difficulty)
       if self.punch_count == 3:
         opponent.vulnerable = False
-        self.punch_count == 0 
+        self.punch_count = 0 
       self.punch_animation()
       punch_blocked = random.randrange(1,(self.punch_difficulty))
       if self.opponent.vulnerable == False:
         opponent.block_animation()
-        self.punch_count = 0
       elif punch_blocked <= (1 + self.punch_count):
         opponent.block_animation()
         self.punch_count = 0
       else:
-        opponent.hit()
-        opponent.health -= 10
+        self.opponent.hit()
+        self.opponent.health -= 10
         self.punch_count += 1
         print(self.punch_count)
         

@@ -1,6 +1,8 @@
 
 from Controller import Controller
+import pygame
 def main():
+  pygame.init()
   c = Controller()
   # diff = c.intro_loop()
   diff = "easy"

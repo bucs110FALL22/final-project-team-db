@@ -7,7 +7,6 @@ import pygame, sys
 
 class Controller():
     def __init__(self):
-      pygame.init()
       self.screen = pygame.display.set_mode((960,540))
       self.clock = pygame.time.Clock()
     def intro_loop(self):
@@ -71,10 +70,13 @@ class Controller():
       clock = pygame.time.Clock()
       pcooldown = 0
       bcooldown = 0
+      punched = False
+      o_punch = 0
       while game_loop:
         self.screen.blit(backround,(0,0))
         sb.health_bars()
         opponent.health_check()
+        player.health_check()
         for event in pygame.event.get():
           if event.type == pygame.QUIT:
             pygame.quit()
@@ -85,14 +87,21 @@ class Controller():
                 pass #play beep audio
               else:
                 player.punch(opponent)
+                punched = True
                 pcooldown = 30
             if event.key == pygame.K_DOWN:
               if bcooldown > 0:
-                pass #play beep audio
+                pass
               else:
                 player.block()
                 bcooldown = 50
-        opponent.punch(player)
+        if punched == False and o_punch > 10:
+          opponent.punch(player)
+          o_punch = 0
+
+        else:
+          punched = False
+          o_punch += 1
         sprites.draw(self.screen)
         sprites.update(.25)
         pygame.display.flip()
@@ -100,6 +109,12 @@ class Controller():
         pcooldown -= 1
         bcooldown -= 1
         if player.game == "loss":
+          self.screen.fill((0,0,0))
+          sb.loss()
+          pygame.display.flip()
           game_loop = False
         if opponent.game == "loss":
+          self.screen.fill((0,0,0))
+          sb.winner()
+          pygame.display.flip()
           game_loop = False
