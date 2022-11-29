@@ -74,7 +74,7 @@ class Opponent(pygame.sprite.Sprite):
     def recovery (self):
       get_up = random.randrange(1,10)
       if get_up > self.recovery_difficulty:
-        u_timer = Timer(get_up,self.backup())  # Timer(seconds, function)
+        u_timer = Timer(get_up,self.backup())
         u_timer.start()
       else:
         
@@ -188,5 +188,4 @@ class Opponent(pygame.sprite.Sprite):
     def hit(self):
       self.sprites = self.hit_img
       self.not_stand = True
-       
        

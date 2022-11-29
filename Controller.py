@@ -12,32 +12,36 @@ class Controller():
     def intro_loop(self):
       self.screen.fill((0,0,255))
       a = Animations(self.screen)
-      b = Animations(self.screen)
       a.intro()
-    
+
       p_button = Button('PLAY',0,270,self.screen,"play")
       htp_button = Button('HOWTOPLAY',750,150,self.screen,"howtoplay")
       E = Button("EASY", 0, 270,self.screen, "easy")
       R = Button("REGULAR", 300, 150,self.screen, "regular")
       H = Button("HARD",700,270,self.screen, "hard")  
-      p_button.print()
-      htp_button.print()
-      pygame.display.update()
+      sprites = pygame.sprite.Group()
+      sprites.add(p_button,htp_button)
       intro = True
       diff_type = True
+      backround_intro = pygame.image.load('assets/intro/Punch_it_intro_127.png').convert_alpha()
+      backround_diff = pygame.image.load('assets/intro_to_diff/intro_to_diff_154.png').convert_alpha()
       while intro:
+        self.screen.blit(backround_intro,(0,0))
         pygame.event.get()
-        play = p_button.is_being_hovered()
+        p_button.is_being_hovered()
         htp_button.is_being_hovered()
-    
+        
         if p_button.play:
+          htp_button.kill_self()
           intro = False
+        sprites.draw(self.screen)
+        sprites.update()
+        pygame.display.flip()
       diff = pygame.image.load(("assets/Button_imgs/difficulty.png")).convert_alpha()
-      self.screen.blit(diff, (15,0))
-      E.print()
-      R.print()
-      H.print()
+      self.screen.blit(diff, (50,0))
+      sprites.add(E,R,H)
       while diff_type:
+        self.screen.blit(backround_diff,(0,0))
         pygame.event.get()
         E.is_being_hovered()
         R.is_being_hovered()
@@ -54,15 +58,14 @@ class Controller():
           diff_type = False
           a.diff_to_match()
           return(R.diff)
+        sprites.draw(self.screen)
+        sprites.update()
         pygame.display.flip()
-        pygame.display.update()
         
     def match_loop(self,difficulty):
-      all_sprites = pygame.sprite.Group()
       opponent = Opponent(difficulty)
       player = Player(difficulty,opponent)
       sb = Scorebord(player,opponent,self.screen)
-      all_sprites.add(player)
       sprites = pygame.sprite.Group()
       sprites.add(opponent,player)
       backround = pygame.image.load('assets/diff_to_match/intro_to_diff_289.png').convert_alpha()

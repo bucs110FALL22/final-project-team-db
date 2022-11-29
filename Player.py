@@ -7,7 +7,7 @@ from threading import Timer
 class Player(pygame.sprite.Sprite):
   def __init__(self,difficulty,Opponent):
     super().__init__()
-    self.health = 0
+    self.health = 100
 
     self.sprites = []
     self.animation_render()
