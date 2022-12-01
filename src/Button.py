@@ -1,8 +1,7 @@
 import pygame
 from pygame.locals import *
-import time
 from threading import Timer
-from Animations import Animations
+from src import Animations
 class Button(pygame.sprite.Sprite):
     def __init__(self,file_name,xpos,ypos,screen,b_type,):
         super().__init__()
@@ -10,7 +9,7 @@ class Button(pygame.sprite.Sprite):
         self.x_pos = xpos
         self.y_pos = ypos
         self.clicked = False
-        self.a = Animations(screen)
+        self.a = Animations.Animations(screen)
         self.diff = "none"
         self.screen = screen
         self.b_type = (b_type).upper()
@@ -32,7 +31,10 @@ class Button(pygame.sprite.Sprite):
         self.kill_self()
         
       if self.b_type == "HOWTOPLAY":
-        print("bring up info sheet")
+         how_to= pygame.image.load("assets/How To Play img/How-To-Play.png")
+         self.screen.blit(how_to,(0,0))
+         
+         print("bring up info sheet")
       if self.b_type == "EASY":
         self.diff = "easy"
         self.kill_self()
@@ -42,6 +44,9 @@ class Button(pygame.sprite.Sprite):
       if self.b_type == "HARD":
         self.diff = "hard"
         self.kill_self()
+      if self.b_type == "X":
+        pass#go back t play screen
+      
       
     def is_being_hovered(self): 
       pos = pygame.mouse.get_pos()

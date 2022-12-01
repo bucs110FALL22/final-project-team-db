@@ -1,13 +1,12 @@
 import pygame
-import time
 import random
-import Scorebord
 from threading import Timer
+from pygame import mixer
 
 class Opponent(pygame.sprite.Sprite):
     def __init__(self,difficulty,):
       super().__init__()
-      self.health = 10
+      self.health = 100
       self.strength = 0
       self.tko_count = 0
       self.recovery_difficulty = 0
@@ -24,15 +23,17 @@ class Opponent(pygame.sprite.Sprite):
       self.image = self.sprites[self.current_sprite]
       self.rect = self.image.get_rect()
       self.rect.topleft = (150,0)
-      self.not_stand = True
+      self.not_stand = False
       self.game = ""
       self.vulnerable = False
       self.player = ""
+      self.already_knocked = False
+      self.animation_stop = False
     def update(self,speed):
       self.current_sprite += speed
       if int(self.current_sprite) >= len(self.sprites):
         self.current_sprite = 0
-        if self.not_stand: 
+        if self.not_stand and self.health > 0: 
           self.stand_animation()
           self.not_stand = False
       self.image = self.sprites[int(self.current_sprite)]
@@ -40,108 +41,69 @@ class Opponent(pygame.sprite.Sprite):
 
 
     def knockdown(self):
-      
-      self.down_animation()
       self.tko_count += 1
       if self.tko_count == 3:
         self.game = "loss"
-      self.recovery()
-      '''cuts to a screen of the player winning'''
+      else:
+        d_timer = Timer(5,self.recovery)
+        d_timer.start()
     def health_check(self):
-      if self.health == 0:
-        self.health = -1
+      if self.health <= 0 and self.already_knocked == False:
+        self.already_knocked = True
+        self.down_animation()
         self.knockdown()
     def difficulty(self, difficulty):
       if difficulty == "regular":
         self.health = 150
         self.strength = 10
         self.recovery_difficulty = 5
-        self.agressiveness = 8
-        self.cooldown = 4
       elif difficulty == "easy":
-        self.health = 100 
+        self.health = 100
         self.strength = 5
         self.recovery_difficulty = 7
-        self.agressiveness = 6
-        # self.cooldown = 5
       elif difficulty == "hard":
         self.health = 200
         self.strength = 15
         self.recovery_difficulty = 3
-        self.agressiveness = 4
-        self.cooldown = 3
         '''sets the starting stats to varying levels depending on difficulty'''
     def recovery (self):
       get_up = random.randrange(1,10)
       if get_up > self.recovery_difficulty:
-        u_timer = Timer(get_up,self.backup())
-        u_timer.start()
+        self.backup()
       else:
-        
         self.game = "loss"
-        print("loss")
     def backup(self):
       self.up_animation()
-      self.tko_count += 1 
       self.health = (100 -(self.tko_count * 25))
+      self.already_knocked = False
       
       '''does a random value to see if the opponent gets a number lower than the recovery_difficulty then it will get back up '''
   
-    # def vulnerable(self):
-    #   self.vulnerable = True
-    #   pygame.time.set_timer(pygame.USEREVENT, 100)
-    #   for event in pygame.event.get():
-    #     if event.type == pygame.USEREVENT:
-    #       self.vulnerable = False
           
     def punch(self,player):
       self.player = player
       if self.health > 0:
         punch_random = random.randrange(1,100)
-        if punch_random > 95 and self.vulnerable == False :
+        if punch_random > 75 and self.vulnerable == False :
           
           self.punch_animation()
-          print("punching")
           p_timer = Timer(.7, self.punch_decider)
           p_timer.start()
     def punch_decider(self):    
         if self.player.blocking:
+          blocking_sound = mixer.Sound("assets/Audio/blocking_punch.mp3")
+          blocking_sound.play() 
           self.vulnerable = True
-          print("blocked")
-          print(self.vulnerable)
-        elif self.player.blocking == False:
-          print("hit")
-          self.player.health -= self.strength
+
           v_timer = Timer(5,self.unvulnerable)
           v_timer.start()
-          print(self.player.health)
+        elif self.player.blocking == False:
+
+          self.player.health -= self.strength
+          hit_sound = mixer.Sound("assets/Audio/oof.wav")
+          hit_sound.play()
     def unvulnerable(self):
       self.vulnerable = False
-    # def punch(self,player):
-    #   if Player.blocking:
-    #     break
-    #   else:
-    #     Player.health -= self.strength
-
-    # def punch_after_block(self):
-    #   punch_chance = random.randrange(1,10)
-    #   if punch_chance >= self.agressiveness:
-    #     self.a.opponent_punch()
-    #     punch(Player)
-        
-    # def when_to_punch(self):#I would be like,it will reroll every time the while loop goes, so id make it like a very low percent chance, then if true, punch, then roll again, with a max of 3 punches. if blocked break the loop
-    
-    #   chance_hit = random.randrange(1,10)
-    
-    #   # if self.hit_by_opponent = True and chance_hit >= 5:
-    #   #   self.a.opponent_punch()
-
-    #   # while self.time > 0 
-    #   #   if self.block = False and chance_hit >=6
-    #   # punch animation
-    #   # time.sleep(self.cooldown)
-
-    #   '''different instance when the opponent would punch, 1. punched after being hit, 2. randomly punches throught the match'''
     def animation_render(self):
       '''
       animation for when the player stands
@@ -181,8 +143,12 @@ class Opponent(pygame.sprite.Sprite):
       self.sprites = self.block_list
       self.not_stand = True
     def down_animation(self):
+
+      self.animation_stop = True
       self.sprites = self.down_list
+      
     def up_animation(self):
+      self.animation_stop = False
       self.sprites = self.up_list
       self.not_stand = True
     def hit(self):

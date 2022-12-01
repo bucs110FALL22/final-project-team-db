@@ -1,32 +1,31 @@
-from Button import Button
-from Opponent import Opponent
-from Player import Player 
-from Scorebord import Scorebord
-from Animations import Animations
+from src import Button
+from src import Opponent
+from src import Player 
+from src import Scorebord
+from src import Animations
 import pygame, sys
-
+from pygame import mixer
 class Controller():
     def __init__(self):
-      self.screen = pygame.display.set_mode((960,540))
+      self.SCREEN_X = 960
+      self.SCREEN_Y = 540
+      self.BLACK = (0,0,0)
+      self.screen = pygame.display.set_mode((self.SCREEN_X,self.SCREEN_Y))
       self.clock = pygame.time.Clock()
     def intro_loop(self):
-      self.screen.fill((0,0,255))
-      a = Animations(self.screen)
+      a = Animations.Animations(self.screen)
       a.intro()
-
-      p_button = Button('PLAY',0,270,self.screen,"play")
-      htp_button = Button('HOWTOPLAY',750,150,self.screen,"howtoplay")
-      E = Button("EASY", 0, 270,self.screen, "easy")
-      R = Button("REGULAR", 300, 150,self.screen, "regular")
-      H = Button("HARD",700,270,self.screen, "hard")  
+      p_button = Button.Button('PLAY',0,270,self.screen,"play")
+      htp_button = Button.Button('HOWTOPLAY',750,150,self.screen,"howtoplay")
+      E = Button.Button("EASY", 0, 270,self.screen, "easy")
+      R = Button.Button("REGULAR", 300, 150,self.screen, "regular")
+      H = Button.Button("HARD",700,270,self.screen, "hard")  
       sprites = pygame.sprite.Group()
       sprites.add(p_button,htp_button)
       intro = True
       diff_type = True
-      backround_intro = pygame.image.load('assets/intro/Punch_it_intro_127.png').convert_alpha()
-      backround_diff = pygame.image.load('assets/intro_to_diff/intro_to_diff_154.png').convert_alpha()
       while intro:
-        self.screen.blit(backround_intro,(0,0))
+        self.screen.blit(a.backround_intro,(0,0))
         pygame.event.get()
         p_button.is_being_hovered()
         htp_button.is_being_hovered()
@@ -37,11 +36,12 @@ class Controller():
         sprites.draw(self.screen)
         sprites.update()
         pygame.display.flip()
-      diff = pygame.image.load(("assets/Button_imgs/difficulty.png")).convert_alpha()
-      self.screen.blit(diff, (50,0))
+      
+      self.screen.blit(a.diff, (50,0))
       sprites.add(E,R,H)
       while diff_type:
-        self.screen.blit(backround_diff,(0,0))
+        self.screen.blit(a.backround_diff,(0,0))
+        self.screen.blit(a.diff, (50,0))
         pygame.event.get()
         E.is_being_hovered()
         R.is_being_hovered()
@@ -57,15 +57,15 @@ class Controller():
         if H.diff == "hard":
           diff_type = False
           a.diff_to_match()
-          return(R.diff)
+          return(H.diff)
         sprites.draw(self.screen)
         sprites.update()
         pygame.display.flip()
         
     def match_loop(self,difficulty):
-      opponent = Opponent(difficulty)
-      player = Player(difficulty,opponent)
-      sb = Scorebord(player,opponent,self.screen)
+      opponent = Opponent.Opponent(difficulty)
+      player = Player.Player(difficulty,opponent)
+      sb = Scorebord.Scorebord(player,opponent,self.screen)
       sprites = pygame.sprite.Group()
       sprites.add(opponent,player)
       backround = pygame.image.load('assets/diff_to_match/intro_to_diff_289.png').convert_alpha()
@@ -76,10 +76,11 @@ class Controller():
       punched = False
       o_punch = 0
       while game_loop:
+        
         self.screen.blit(backround,(0,0))
         sb.health_bars()
-        opponent.health_check()
         player.health_check()
+        
         for event in pygame.event.get():
           if event.type == pygame.QUIT:
             pygame.quit()
@@ -87,7 +88,8 @@ class Controller():
           if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
               if pcooldown > 0:
-                pass #play beep audio
+                cooldown_sound = mixer.Sound("assets/Audio/blocking_bell.mp3")
+                cooldown_sound.play() 
               else:
                 player.punch(opponent)
                 punched = True
@@ -98,26 +100,29 @@ class Controller():
               else:
                 player.block()
                 bcooldown = 50
-        if punched == False and o_punch > 10:
+        if punched == False and o_punch > 50 and player.health > 0:
           opponent.punch(player)
           o_punch = 0
+        
 
         else:
           punched = False
           o_punch += 1
+        
         sprites.draw(self.screen)
         sprites.update(.25)
         pygame.display.flip()
         clock.tick(30)
+        opponent.health_check()
         pcooldown -= 1
         bcooldown -= 1
         if player.game == "loss":
-          self.screen.fill((0,0,0))
+          self.screen.fill(self.BLACK)
           sb.loss()
           pygame.display.flip()
           game_loop = False
         if opponent.game == "loss":
-          self.screen.fill((0,0,0))
+          self.screen.fill(self.BLACK)
           sb.winner()
           pygame.display.flip()
           game_loop = False
