@@ -10,9 +10,15 @@ class Animations():
     self.backround_diff = pygame.image.load('assets/intro_to_diff/intro_to_diff_154.png').convert_alpha()
     self.diff = pygame.image.load(("assets/Button_imgs/difficulty.png")).convert_alpha()
   def match_backround(self):
+    '''
+    backround image for match
+    '''
     pic = pygame.image.load('assets/diff_to_match/intro_to_diff_289.png').convert_alpha()
     self.screen.blit(pic, (0, 0))
   def intro(self):
+    '''
+    intro animation
+    '''
     intro_pic = pygame.image.load('assets/intro/Punch_it_intro_1.png').convert_alpha()
 
     pic_num = 1
@@ -25,6 +31,9 @@ class Animations():
     start_sound = mixer.Sound("assets/Audio/bell_start.wav")
     start_sound.play()
   def intro_to_diff(self):
+    '''
+    from intro to difficulty animation
+    '''
     pic = pygame.image.load('assets/intro_to_diff/intro_to_diff_128.png').convert_alpha()
 
     pic_num = 128
@@ -35,6 +44,9 @@ class Animations():
       time.sleep(.1)
       pic_num += 2   
   def diff_to_match(self):
+    '''
+    from difficulty to match animation
+    '''
     pic = pygame.image.load('assets/diff_to_match/intro_to_diff_175.png').convert_alpha()
     pic_num = 175
     for i in range(57):

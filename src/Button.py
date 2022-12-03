@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from threading import Timer
 from src import Animations
+import time
 class Button(pygame.sprite.Sprite):
     def __init__(self,file_name,xpos,ypos,screen,b_type,):
         super().__init__()
@@ -23,18 +24,21 @@ class Button(pygame.sprite.Sprite):
     def update(self):
       self.image = self.img_list[int(self.current_sprite)]
       
-    def click_recations(self):
+    def click_reactions(self):
       if self.b_type == "PLAY":
         self.a.intro_to_diff()
         self.play = True
-        print("start game sequence")
         self.kill_self()
         
       if self.b_type == "HOWTOPLAY":
-         how_to= pygame.image.load("assets/How To Play img/How-To-Play.png")
+         
+         how_to = pygame.transform.scale(pygame.image.load("assets/How To Play img/How-To-Play.png"),(960,540)).convert_alpha()
+        
          self.screen.blit(how_to,(0,0))
          
-         print("bring up info sheet")
+         pygame.display.flip()
+         time.sleep(23)
+         
       if self.b_type == "EASY":
         self.diff = "easy"
         self.kill_self()
@@ -56,8 +60,7 @@ class Button(pygame.sprite.Sprite):
         b_timer.start()
         for event in pygame.event.get():
           if event.type == pygame.MOUSEBUTTONDOWN:
-            print("hov")
-            self.click_recations()
+            self.click_reactions()
          
     def unhover(self):
       self.current_sprite = 0

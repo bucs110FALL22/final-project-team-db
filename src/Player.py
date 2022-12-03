@@ -97,6 +97,8 @@ class Player(pygame.sprite.Sprite):
       self.back_up()
       if self.get_back_up:
         self.tko_count += 1  
+        self.mash_call = False
+        self.get_back_up = False
         self.health = (self.RECOVERY_HEALTH -(self.tko_count * self.KNOCKDOWN_HEALTH_SUBTRACT))
         self.up_animation()
   def back_up(self):
@@ -112,6 +114,7 @@ class Player(pygame.sprite.Sprite):
     '''
     checks for times space bar has been hit in a ten second period, if enough presses occur player will return to game, if not enough then game ends
     '''
+    
     pygame.time.set_timer(pygame.USEREVENT, self.KNOCKDOWN_TIMER_TIME)
     timer = True
     times_pressed = 0
@@ -126,8 +129,9 @@ class Player(pygame.sprite.Sprite):
             print(times_pressed)
     if times_pressed >=  self.required_presses:
       self.get_back_up = True
-      self.mash_called = False
+      
     else:
+      print("loss")
       self.game = "loss"
       
   def punch(self,opponent):
@@ -139,14 +143,20 @@ class Player(pygame.sprite.Sprite):
       opponent.vulnerable = False
       self.punch_count = 0 
     self.punch_animation()
-    punch_sound = mixer.Sound("assets/Audio/Punch.wav")
-    punch_sound.play()
+    # punch_sound = mixer.Sound("assets/Audio/Punch.wav")
+    # punch_sound.play()
     punch_blocked = random.randrange(1,(self.punch_difficulty))
     if self.opponent.vulnerable == False:
       opponent.block_animation()
+      punch_sound = mixer.Sound("assets/Audio/Punch.wav")
+      punch_sound.play()
     elif punch_blocked <= (1 + self.punch_count):
       opponent.block_animation()
+      punch_sound = mixer.Sound("assets/Audio/Punch.wav")
+      punch_sound.play()
     else:
+      hit_sound = mixer.Sound("assets/Audio/oof_opponent.wav")
+      hit_sound.play()
       self.opponent.hit()
       self.opponent.health -= self.STRENGTH
       self.punch_count += 1

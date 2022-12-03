@@ -13,6 +13,9 @@ class Controller():
       self.screen = pygame.display.set_mode((self.SCREEN_X,self.SCREEN_Y))
       self.clock = pygame.time.Clock()
     def intro_loop(self):
+      '''
+      begins the game with intro animations, and prompts the player to choose difficulty and how to play if they do not already know
+      '''
       a = Animations.Animations(self.screen)
       a.intro()
       p_button = Button.Button('PLAY',0,270,self.screen,"play")
@@ -63,6 +66,10 @@ class Controller():
         pygame.display.flip()
         
     def match_loop(self,difficulty):
+      '''
+      main game loop
+      args: difficulty(str) dictates how hard the game will be
+      '''
       opponent = Opponent.Opponent(difficulty)
       player = Player.Player(difficulty,opponent)
       sb = Scorebord.Scorebord(player,opponent,self.screen)
